@@ -30,6 +30,7 @@
 #include "nnet/nnet-trnopts.h"
 
 #include <iostream>
+#include <vector>
 
 namespace kaldi {
 namespace nnet1 {
@@ -106,6 +107,10 @@ class Component {
 
   /// Get Type Identification of the component
   virtual ComponentType GetType() const = 0;  
+
+  virtual const char* Type() {
+      return TypeToMarker(this->GetType());
+  }
   /// Check if contains trainable parameters 
   virtual bool IsUpdatable() const { 
     return false; 
@@ -139,6 +144,11 @@ class Component {
   /// Optionally print some additional info
   virtual std::string Info() const { return ""; }
   virtual std::string InfoGradient() const { return ""; }
+
+  virtual std::vector<Blob<BaseFloat>* > Params() {
+      std::vector<Blob<BaseFloat>* > params_;
+      return params_;
+  }
 
 
  /// Abstract interface for propagation/backpropagation 

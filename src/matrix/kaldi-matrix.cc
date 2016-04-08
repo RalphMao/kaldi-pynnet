@@ -2844,5 +2844,53 @@ template class MatrixBase<double>;
 template class SubMatrix<float>;
 template class SubMatrix<double>;
 
+
+template<typename Real>
+Blob<Real>::Blob(CuMatrix<Real> &M) {
+    Matrix<Real> Mt = M.Mat();
+    data_ = Mt.Data();
+    shape_.push_back(Mt.NumRows());
+    stride_.push_back(Mt.NumRows());
+    shape_.push_back(Mt.NumCols());
+    stride_.push_back(Mt.Stride());
+}
+
+template<typename Real>
+Blob<Real>::Blob(CuVector<Real> &V) {
+    data_ = V.Data();
+    shape_.push_back(V.Dim());
+    stride_.push_back(V.Dim());
+}
+
+template<typename Real>
+Real* Blob<Real>::data() {
+    return data_;
+}
+template<typename Real>
+std::vector<int> Blob<Real>::shape() {
+    return shape_;
+}
+
+template<typename Real>
+std::vector<int> Blob<Real>::stride() {
+    return stride_;
+}
+
+template<typename Real>
+CuMatrix<Real>& Blob<Real>::ToCuMatrix() {
+    KALDI_ASSERT(shape_.size() == 2);
+    Matrix<Real> mat(data_, shape_[1], shape_[0], stride_[1]);
+    CuMatrix<Real> cumat(mat);
+    return cumat;
+}
+template<typename Real>
+CuVector<Real>& Blob<Real>::ToCuVector(){
+    KALDI_ASSERT(shape_.size() == 1);
+    Vector<Real> vec(data_, shape_[0]);
+    CuVector<Real> cuvec(vec);
+    return cuvec;
+}
+
+
 } // namespace kaldi
 

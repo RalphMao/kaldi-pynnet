@@ -75,6 +75,8 @@ template<typename Real> class CuSpMatrix;
 template<typename Real> class CuTpMatrix;
 template<typename Real> class CuSparseMatrix;
 
+template<typename Real> class CuVector;
+
 class CompressedMatrix;
 class GeneralMatrix;
 

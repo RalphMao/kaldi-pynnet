@@ -1032,6 +1032,21 @@ bool SameDim(const MatrixBase<Real> &M, const MatrixBase<Real> &N) {
 
 /// @} end of \addtogroup matrix_funcs_io
 
+template<typename Real>
+class Blob {
+    public:
+        Blob(CuMatrix<Real> &M);
+        Blob(CuVector<Real> &V);
+        Real* data();
+        std::vector<int> shape();
+        std::vector<int> stride();
+        CuMatrix<Real>& ToCuMatrix();
+        CuVector<Real>& ToCuVector();
+    private:
+        Real* data_;
+        std::vector<int> shape_;
+        std::vector<int> stride_;
+};
 
 }  // namespace kaldi
 

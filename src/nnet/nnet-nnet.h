@@ -61,6 +61,9 @@ class Nnet {
 
   const Component& GetComponent(int32 c) const;
   Component& GetComponent(int32 c);
+  std::vector<Component*> Components() {
+      return components_;
+  }
 
   /// Sets the c'th component to "component", taking ownership of the pointer
   /// and deleting the corresponding one that we own.

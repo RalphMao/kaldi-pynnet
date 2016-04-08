@@ -38,6 +38,7 @@ namespace kaldi {
 template<typename Real>
 class VectorBase {
  public:
+  VectorBase(Real* data, MatrixIndexT size): data_(data), dim_(size) {}
   /// Set vector to all zeros.
   void SetZero();
 

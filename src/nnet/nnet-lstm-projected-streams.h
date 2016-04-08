@@ -215,6 +215,18 @@ class LstmProjectedStreams : public UpdatableComponent {
     return;
   }
 
+  virtual std::vector<Blob<BaseFloat>*> Params() {
+      std::vector<Blob<BaseFloat>* > params_;
+      params_.push_back(&Blob<BaseFloat>(w_gifo_x_));
+      params_.push_back(&Blob<BaseFloat>(w_gifo_r_));
+      params_.push_back(&Blob<BaseFloat>(bias_));
+      params_.push_back(&Blob<BaseFloat>(peephole_i_c_));
+      params_.push_back(&Blob<BaseFloat>(peephole_f_c_));
+      params_.push_back(&Blob<BaseFloat>(peephole_f_o_));
+      params_.push_back(&Blob<BaseFloat>(w_r_m_));
+      return params_;
+  }
+
   std::string Info() const {
     return std::string("  ") +
       "\n  w_gifo_x_  "   + MomentStatistics(w_gifo_x_) +
