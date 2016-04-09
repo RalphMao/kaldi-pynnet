@@ -30,7 +30,7 @@ include kaldi.mk
 
 # Reset the default goal, so that the all target will become default
 .DEFAULT_GOAL :=
-all: checkversion test_dependencies kaldi.mk mklibdir $(SUBDIRS)
+all: checkversion test_dependencies kaldi.mk mklibdir $(SUBDIRS) biglib
 	-echo Done
 
 mklibdir:

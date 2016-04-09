@@ -41,7 +41,7 @@ ifeq ($(shell uname), Darwin)
 else
 ifeq ($(shell uname), Linux)
 	# Building shared library from static (static was compiled with -fPIC)
-	$(CXX) -shared -o $@ -Wl,--no-undefined -Wl,--as-needed  -Wl,-soname=$@,--whole-archive $(LIBNAME).a -Wl,--no-whole-archive  $(LDFLAGS) $(XDEPENDS) $(LDLIBS)
+	$(CXX) -g -shared -o $@ -Wl,--no-undefined -Wl,--as-needed  -Wl,-soname=$@,--whole-archive $(LIBNAME).a -Wl,--no-whole-archive  $(LDFLAGS) $(XDEPENDS) $(LDLIBS)
 	rm -f $(KALDILIBDIR)/$@; ln -s $(shell pwd)/$@ $(KALDILIBDIR)/$@
 	#cp $@ $(KALDILIBDIR)
 else  # Platform not supported

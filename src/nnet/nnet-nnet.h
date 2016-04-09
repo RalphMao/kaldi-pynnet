@@ -61,7 +61,7 @@ class Nnet {
 
   const Component& GetComponent(int32 c) const;
   Component& GetComponent(int32 c);
-  std::vector<Component*> Components() {
+  std::vector<Component*>& Components() {
       return components_;
   }
 

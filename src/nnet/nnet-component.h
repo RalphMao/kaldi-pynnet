@@ -28,6 +28,7 @@
 #include "cudamatrix/cu-matrix.h"
 #include "cudamatrix/cu-vector.h"
 #include "nnet/nnet-trnopts.h"
+#include "nnet/nnet-blob.h"
 
 #include <iostream>
 #include <vector>
@@ -103,10 +104,10 @@ class Component {
   virtual ~Component() { }
 
   /// Copy component (deep copy).
-  virtual Component* Copy() const = 0;
+  virtual Component* Copy() const {return NULL;}
 
   /// Get Type Identification of the component
-  virtual ComponentType GetType() const = 0;  
+  virtual ComponentType GetType() const {return kUnknown;}
 
   virtual const char* Type() {
       return TypeToMarker(this->GetType());
@@ -155,12 +156,12 @@ class Component {
  protected:
   /// Forward pass transformation (to be implemented by descending class...)
   virtual void PropagateFnc(const CuMatrixBase<BaseFloat> &in,
-                            CuMatrixBase<BaseFloat> *out) = 0;
+                            CuMatrixBase<BaseFloat> *out) {}
   /// Backward pass transformation (to be implemented by descending class...)
   virtual void BackpropagateFnc(const CuMatrixBase<BaseFloat> &in,
                                 const CuMatrixBase<BaseFloat> &out,
                                 const CuMatrixBase<BaseFloat> &out_diff,
-                                CuMatrixBase<BaseFloat> *in_diff) = 0;
+                                CuMatrixBase<BaseFloat> *in_diff) {}
 
   /// Initialize internal data of a component
   virtual void InitData(std::istream &is) { }
@@ -218,7 +219,7 @@ class UpdatableComponent : public Component {
     return opts_; 
   }
 
-  virtual void InitData(std::istream &is) = 0;
+  virtual void InitData(std::istream &is) {}
 
  protected:
   /// Option-class with training hyper-parameters
