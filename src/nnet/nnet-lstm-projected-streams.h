@@ -216,15 +216,26 @@ class LstmProjectedStreams : public UpdatableComponent {
   }
 
   virtual std::vector<Blob<BaseFloat>*> Params() {
-      std::vector<Blob<BaseFloat>* > params_;
+      std::vector<Blob<BaseFloat>*> params_;
       params_.push_back(new Blob<BaseFloat>(w_gifo_x_));
       params_.push_back(new Blob<BaseFloat>(w_gifo_r_));
-      params_.push_back(new Blob<BaseFloat>(w_r_m_));
       params_.push_back(new Blob<BaseFloat>(peephole_i_c_));
       params_.push_back(new Blob<BaseFloat>(peephole_f_c_));
       params_.push_back(new Blob<BaseFloat>(peephole_o_c_));
       params_.push_back(new Blob<BaseFloat>(bias_));
+      params_.push_back(new Blob<BaseFloat>(w_r_m_));
       return params_;
+  }
+
+  virtual void SetParams(std::vector<Blob<BaseFloat>*>& params) {
+      KALDI_ASSERT(params.size() == 7);
+      w_gifo_x_.CopyFromMat(params[0]->ToMatrix());
+      w_gifo_r_.CopyFromMat(params[1]->ToMatrix());
+      peephole_i_c_.CopyFromVec(params[2]->ToVector());
+      peephole_f_c_.CopyFromVec(params[3]->ToVector());
+      peephole_o_c_.CopyFromVec(params[4]->ToVector());
+      bias_.CopyFromVec(params[5]->ToVector());
+      w_r_m_.CopyFromMat(params[6]->ToMatrix());
   }
 
   std::string Info() const {

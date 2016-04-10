@@ -147,10 +147,10 @@ class Component {
   virtual std::string InfoGradient() const { return ""; }
 
   virtual std::vector<Blob<BaseFloat>* > Params() {
-      std::vector<Blob<BaseFloat>* > params_;
       return params_;
   }
 
+  virtual void SetParams(std::vector<Blob<BaseFloat>*>& params) {}
 
  /// Abstract interface for propagation/backpropagation 
  protected:

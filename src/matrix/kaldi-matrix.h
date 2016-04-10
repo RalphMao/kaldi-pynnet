@@ -696,7 +696,6 @@ class MatrixBase {
                MatrixBase<Real> *V);
 
 #endif
- protected:
 
   ///  Initializer, callable only from child.
   explicit MatrixBase(Real *data, MatrixIndexT cols, MatrixIndexT rows, MatrixIndexT stride) :
@@ -767,6 +766,8 @@ class Matrix : public MatrixBase<Real> {
   /// Allocates new memory.
   explicit Matrix(const MatrixBase<Real> & M,
                   MatrixTransposeType trans = kNoTrans);
+
+  explicit Matrix(Real* data, MatrixIndexT cols, MatrixIndexT rows, MatrixIndexT stride): MatrixBase<Real>(data, cols, rows, stride) {}
 
   /// Same as above, but need to avoid default copy constructor.
   Matrix(const Matrix<Real> & M);  //  (cannot make explicit)

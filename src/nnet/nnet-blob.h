@@ -18,8 +18,8 @@ class Blob {
         Real* data() {return data_;}
         inline std::vector<int>& shape() { return shape_;}
         inline std::vector<int>& stride() {return stride_;}
-        // CuMatrix<Real>& ToCuMatrix();
-        // CuVector<Real>& ToCuVector();
+        Matrix<Real> ToMatrix();
+        Vector<Real> ToVector();
     private:
         Real* data_;
         std::vector<int> shape_;
@@ -51,23 +51,20 @@ Blob<Real>::Blob(CuVector<Real> &V) {
     stride_.push_back(sizeof(Real));
 }
 
-/*
-
 template<typename Real>
-CuMatrix<Real>& Blob<Real>::ToCuMatrix() {
+Matrix<Real> Blob<Real>::ToMatrix() {
     KALDI_ASSERT(shape_.size() == 2);
-    MatrixBase<Real> mat(data_, shape_[1], shape_[0], stride_[1]);
-    CuMatrix<Real> cumat(mat);
-    return cumat;
+    KALDI_ASSERT(stride_[1] == sizeof(Real));
+    Matrix<Real> mat(data_, shape_[1], shape_[0], stride_[0] / sizeof(Real));
+    return mat;
 }
 template<typename Real>
-CuVector<Real>& Blob<Real>::ToCuVector(){
+Vector<Real> Blob<Real>::ToVector(){
     KALDI_ASSERT(shape_.size() == 1);
-    VectorBase<Real> vec(data_, shape_[0]);
-    CuVector<Real> cuvec(vec);
-    return cuvec;
+    KALDI_ASSERT(stride_[0] == sizeof(Real));
+    Vector<Real> vec(data_, shape_[0]);
+    return vec;
 }
-*/
 
 // Instantiate
 template class Blob<float>;

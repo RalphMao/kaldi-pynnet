@@ -38,7 +38,6 @@ namespace kaldi {
 template<typename Real>
 class VectorBase {
  public:
-  VectorBase(Real* data, MatrixIndexT size): data_(data), dim_(size) {}
   /// Set vector to all zeros.
   void SetZero();
 
@@ -348,17 +347,19 @@ class VectorBase {
   friend class VectorBase<float>;
   friend class CuVectorBase<Real>;
   friend class CuVector<Real>;
- protected:
+ 
   /// Destructor;  does not deallocate memory, this is handled by child classes.
   /// This destructor is protected so this object so this object can only be
   /// deleted via a child.
   ~VectorBase() {}
 
+ protected:
   /// Empty initializer, corresponds to vector of zero size.
   explicit VectorBase(): data_(NULL), dim_(0) {
     KALDI_ASSERT_IS_FLOATING_TYPE(Real);
   }
 
+  VectorBase(Real* data, MatrixIndexT size): data_(data), dim_(size) {}
 // Took this out since it is not currently used, and it is possible to create
 // objects where the allocated memory is not the same size as dim_ : Arnab
 //  /// Initializer from a pointer and a size; keeps the pointer internally
@@ -369,6 +370,7 @@ class VectorBase {
   // Arnab : made this protected since it is unsafe too.
   /// Load data into the vector: sz must match own size.
   void CopyFromPtr(const Real* Data, MatrixIndexT sz);
+
 
   /// data memory area
   Real* data_;
@@ -386,6 +388,7 @@ class Vector: public VectorBase<Real> {
  public:
   /// Constructor that takes no arguments.  Initializes to empty.
   Vector(): VectorBase<Real>() {}
+  explicit Vector(Real* data, MatrixIndexT size): VectorBase<Real>(data, size) {}
 
   /// Constructor with specific size.  Sets to all-zero by default
   /// if set_zero == false, memory contents are undefined.
