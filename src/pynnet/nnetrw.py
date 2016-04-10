@@ -1,5 +1,4 @@
 
-import IPython
 import os,sys
 from collections import OrderedDict
 import re
@@ -48,38 +47,6 @@ def get_keys(string):
         keys.add(get_first_key(line))
     return keys
 
-Supported_Layers = get_keys(source_)
-if None in Supported_Layers:
-    Supported_Layers.remove(None)
-
-class Blob(object):
-    def __init__(self, data):
-        self._data = data
-
-    @property
-    def data(self):
-        return self._data
-
-class Nnet(object):
-    def __init__(self):
-        self.params = OrderedDict() #parameters of updatable layers
-        self.layers = OrderedDict() #type of layers
-        self.misc = OrderedDict() #type of layers
-
-    def append_layer(self, type_t):
-        assert type_t in Supported_Layers
-        self.params[len(self.layers)] = []
-        self.misc[len(self.layers)] = []
-        self.layers[len(self.layers)] = type_t
-
-    def append_params(self, params):
-        self.params[len(self.layers)-1].append(Blob(params))
-
-    def append_misc(self, string):
-        if len(self.layers) == 0:
-            return
-        self.misc[len(self.layers)-1].append(string)
-
 def ReadMat(f, line):
     if line.strip() == '':
         line = f.readline()
@@ -97,64 +64,100 @@ def ReadMat(f, line):
             line = f.readline()
 
     data = np.array(data)
-    if data.dtype != np.dtype('float64'):
-        IPython.embed()
+    assert data.dtype == np.dtype('float64')
     return np.squeeze(data.astype('f'))
 
 def WriteMat(f, mat):
-    if mat.ndim == 1:
-        mat = mat[None,:]
-    assert mat.ndim == 2
-    f.write(' [\n')
-    for i in range(mat.shape[0]):
-        f.write(' '.join(map(str, mat[i])) + '\n')
+    assert mat.ndim == 2 or mat.ndim == 1
+    if mat.ndim == 2:
+        f.write(' [\n')
+        for i in range(mat.shape[0]):
+            f.write(' '.join(map(str, mat[i])) + '\n')
+    else:
+        f.write(' [ ')
+        f.write(' '.join(map(str, mat)))
     f.write(' ]\n')
 
-def ReadNet(filename):
-    #flag = os.system('nnet-copy --binary=false %s .tmp'%(filename))
-    #assert flag == 0
 
-    net = Nnet()
-    f = open('.tmp','r')
-    while True:
-        line = f.readline()
-        if line == '':
-            break
-        key = get_first_key(line)
-        if key == '/Nnet':
-            break
-        elif key in Supported_Layers:
-            net.append_layer(key)
-            print "Get a Layer:" + key
-            net.append_misc(line)
-            assert '[' not in line
-        elif '[' in line:
-            idx = line.index('[')
-            if line[:idx].strip() != '':
-                net.append_misc(line[:idx])
-            params = ReadMat(f, line[idx+1:])
-            net.append_params(params)
-        else:
-            net.append_misc(line)
-        print key
+Supported_Layers = get_keys(source_)
+if None in Supported_Layers:
+    Supported_Layers.remove(None)
 
-    #os.system('rm .tmp')
-    return net
 
-def WriteNet(net, filename):
-    f = open(filename, 'w')
+class Blob(object):
+    def __init__(self, data):
+        self._data = data
 
-    f.write('<Nnet>\n')
-    for layer in net.layers:
-        f.writelines(net.misc[layer])
-        for mat in net.params[layer]:
-            WriteMat(f,mat.data)
-    f.write('<Nnet>\n')
-    f.close()
+    @property
+    def data(self):
+        return self._data
+
+class Nnet(object):
+    def __init__(self, filename = None):
+        self.params = OrderedDict() #parameters of updatable layers
+        self.layers = OrderedDict() #type of layers
+        self.misc = OrderedDict() #type of layers
+        if type(filename) is str:
+            self.Read(filename)
+
+    def append_layer(self, type_t):
+        assert type_t in Supported_Layers
+        self.params[len(self.layers)] = []
+        self.misc[len(self.layers)] = []
+        self.layers[len(self.layers)] = type_t
+
+    def append_params(self, params):
+        self.params[len(self.layers)-1].append(Blob(params))
+
+    def append_misc(self, string):
+        if len(self.layers) == 0:
+            return
+        self.misc[len(self.layers)-1].append(string)
+
+    def Read(net, filename):
+        flag = os.system('nnet-copy --binary=false %s .tmp'%(filename))
+        assert flag == 0
+
+        f = open('.tmp','r')
+        while True:
+            line = f.readline()
+            if line == '':
+                break
+            key = get_first_key(line)
+            if key == '/Nnet':
+                break
+            elif key in Supported_Layers:
+                net.append_layer(key)
+                print "Get a Layer:" + key
+                net.append_misc(line)
+                assert '[' not in line
+            elif '[' in line:
+                idx = line.index('[')
+                if line[:idx].strip() != '':
+                    net.append_misc(line[:idx])
+                params = ReadMat(f, line[idx+1:])
+                net.append_params(params)
+            else:
+                net.append_misc(line)
+        f.close()
+
+        os.system('rm .tmp')
+
+    def Write(net, filename):
+        f = open(filename, 'w')
+
+        f.write('<Nnet>\n')
+        for layer in net.layers:
+            f.writelines(net.misc[layer])
+            for mat in net.params[layer]:
+                WriteMat(f,mat.data)
+        f.write('<Nnet>\n')
+        f.close()
 
 if __name__ == "__main__":
+    import IPython
     
-    net = ReadNet('/home/maohz12/online_50h_Tsinghua/exp_train_50h/lstm_karel_bak/final.nnet')
-    WriteNet(net, 'test.nnet')
-    net2 = ReadNet('test.nnet')
+    net = Nnet('/home/maohz12/online_50h_Tsinghua/exp_train_50h/lstm_karel_bak/final.nnet')
+    net.Write('test.nnet')
+    net2 = Nnet('test.nnet')
     IPython.embed()
