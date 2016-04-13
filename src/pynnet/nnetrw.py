@@ -4,7 +4,7 @@ from collections import OrderedDict
 import re
 import numpy as np
 
-source_ = r'''
+_source_ = r'''
 { Component::kAffineTransform,"<AffineTransform>" },
 { Component::kLinearTransform,"<LinearTransform>" },
 { Component::kConvolutionalComponent,"<ConvolutionalComponent>"},
@@ -79,7 +79,7 @@ def WriteMat(f, mat):
     f.write(' ]\n')
 
 
-Supported_Layers = get_keys(source_)
+Supported_Layers = get_keys(_source_)
 if None in Supported_Layers:
     Supported_Layers.remove(None)
 
@@ -116,7 +116,7 @@ class Nnet(object):
 
     def Read(net, filename):
         flag = os.system('nnet-copy --binary=false %s .tmp'%(filename))
-        assert flag == 0
+        assert flag == 0, 'cannot find command nnet-copy'
 
         f = open('.tmp','r')
         while True:
@@ -157,7 +157,7 @@ class Nnet(object):
 if __name__ == "__main__":
     import IPython
     
-    net = Nnet('/home/maohz12/online_50h_Tsinghua/exp_train_50h/lstm_karel_bak/final.nnet')
+    net = Nnet('/home/maohz12/online_50h_Tsinghua/exp_train_50h/lstm_karel_bak/final.nnet.bak')
     net.Write('test.nnet')
     net2 = Nnet('test.nnet')
     IPython.embed()
